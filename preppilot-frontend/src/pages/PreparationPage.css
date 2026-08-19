@@ -1,0 +1,35 @@
+/* Small UX/accessibility styles for PreparationPage */
+.prep-button {
+  width: 100%;
+  text-align: left;
+  padding: 0.5rem;
+  border-radius: 6px;
+  border: 1px solid #eee;
+  background: #fff;
+  cursor: pointer;
+  font: inherit;
+}
+
+.prep-button:focus {
+  outline: 3px solid #2d6cdf;
+  outline-offset: 2px;
+}
+
+.prep-selected {
+  border: 2px solid #2d6cdf;
+  background: #eef4ff;
+}
+
+/* Ensure listbox and options spacing */
+[role='listbox'] > li {
+  margin-bottom: 0.5rem;
+}
+
+/* Screen-reader only helper */
+.sr-only {
+  position: absolute !important;
+  height: 1px; width: 1px;
+  overflow: hidden;
+  clip: rect(1px, 1px, 1px, 1px);
+  white-space: nowrap;
+}
