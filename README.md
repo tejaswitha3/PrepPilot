@@ -2,10 +2,8 @@
 
 CI status
 
-- Frontend tests: ![Frontend Tests](https://github.com/OWNER/REPO/actions/workflows/frontend-tests.yml/badge.svg?branch=main)
-- Backend tests: ![Backend Tests](https://github.com/OWNER/REPO/actions/workflows/frontend-tests.yml/badge.svg?branch=main)
-
-Replace `OWNER/REPO` above with your GitHub owner and repository name to enable live badges.
+- Frontend tests: ![Frontend Tests](https://github.com/tejaswitha3/PrepPilot/actions/workflows/frontend-tests.yml/badge.svg?branch=deploy)
+- Backend tests: ![Backend Tests](https://github.com/tejaswitha3/PrepPilot/actions/workflows/frontend-tests.yml/badge.svg?branch=deploy)
 
 Phase 16 — Production Deployment (summary)
 

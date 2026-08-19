@@ -1,7 +1,7 @@
 import { render, screen, waitFor } from '@testing-library/react';
 import { vi } from 'vitest';
 
-vi.mock('../api/questionApi', () => ({
+vi.mock('../../api/questionApi', () => ({
   fetchPreparation: vi.fn(() => Promise.resolve({ data: { categories: [{ id: 'dsa', name: 'DSA / Coding', topics: [] }] } })),
 }));
 

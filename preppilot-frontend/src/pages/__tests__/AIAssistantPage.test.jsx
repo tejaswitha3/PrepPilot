@@ -1,7 +1,7 @@
 import { render, screen, waitFor } from '@testing-library/react';
 import { vi } from 'vitest';
 
-vi.mock('../api/chatApi', () => ({
+vi.mock('../../api/chatApi', () => ({
   fetchConversations: vi.fn(() => Promise.resolve({ data: [{ id: 1, title: 'Test', last_message: 'hello' }] })),
   fetchConversationById: vi.fn(() => Promise.resolve({ data: { id: 1, messages: [] } })),
   sendChatMessage: vi.fn(() => Promise.resolve({ data: { reply: 'ok', conversation_id: 1 } })),

@@ -1,7 +1,7 @@
 import { render, screen, waitFor } from '@testing-library/react';
 import { vi } from 'vitest';
 
-vi.mock('../api/questionApi', () => ({
+vi.mock('../../api/questionApi', () => ({
   fetchAttempts: vi.fn(() => Promise.resolve({ data: [{ id: 1, question_text: 'Q1', category: 'DSA', topic: 'arrays', selected_answer: 'A', is_correct: true, created_at: new Date().toISOString() }] })),
 }));
 

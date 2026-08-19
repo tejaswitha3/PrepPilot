@@ -2,7 +2,7 @@ import os
 
 from flask import Flask, jsonify
 
-from .config import config
+from .config import config, validate_production_config
 from .extensions import cors, db, jwt, migrate
 
 
@@ -10,6 +10,8 @@ def create_app(config_name=None):
     app = Flask(__name__)
 
     env_name = config_name or os.getenv("FLASK_ENV", "development")
+    if env_name == "production":
+        validate_production_config()
     app.config.from_object(config[env_name])
 
     db.init_app(app)

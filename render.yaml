@@ -1,31 +1,33 @@
-# Render YAML deployment manifest (edit OWNER/REPO and placeholders before use)
+# Render YAML deployment manifest for the deploy branch.
 
 services:
   - type: web
     name: preppilot-backend
     env: docker
-    repo: https://github.com/OWNER/REPO
-    branch: main
-    dockerfilePath: preppilot-backend/Dockerfile
+    repo: https://github.com/tejaswitha3/PrepPilot
+    branch: deploy
+    rootDir: preppilot-backend
+    dockerfilePath: Dockerfile
     plan: free
-    buildCommand: ""
     envVars:
       - key: FLASK_ENV
         value: production
       - key: JWT_SECRET_KEY
-        value: $JWT_SECRET_KEY
+        generateValue: true
       - key: SECRET_KEY
-        value: $SECRET_KEY
+        generateValue: true
+      - key: DATABASE_URL
+        fromDatabase:
+          name: preppilot-db
+          property: connectionString
       - key: OPENAI_API_KEY
-        value: $OPENAI_API_KEY
+        sync: false
       - key: CORS_ORIGINS
-        value: https://your-frontend-url.com
+        sync: false
 
 databases:
   - name: preppilot-db
     plan: free
     region: oregon
 
-# To link the DATABASE_URL env var to the created database in Render,
-# after creating the service in the Render dashboard, set DATABASE_URL
-# to the connection string from the created `preppilot-db` service.
+# Set CORS_ORIGINS to the deployed frontend origin in the Render dashboard.
