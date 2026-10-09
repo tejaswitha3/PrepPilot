@@ -7,6 +7,7 @@ export default function ProfilePage() {
   const [editingName, setEditingName] = useState('');
   const [saving, setSaving] = useState(false);
   const [message, setMessage] = useState('');
+  const [error, setError] = useState('');
 
   useEffect(() => {
     setLoading(true);
@@ -16,7 +17,7 @@ export default function ProfilePage() {
         setProfile(data || null);
         setEditingName(data?.user?.name || '');
       })
-      .catch(() => setProfile(null))
+      .catch(() => setError('Unable to load your profile. Check your connection and try again.'))
       .finally(() => setLoading(false));
   }, []);
 
@@ -37,7 +38,9 @@ export default function ProfilePage() {
       <h1>Profile</h1>
 
       {loading ? (
-        <p>Loading profile...</p>
+        <p role="status">Loading profile...</p>
+      ) : error ? (
+        <p role="alert" style={{ color: 'crimson' }}>{error}</p>
       ) : profile ? (
         <div style={{ maxWidth: 720 }}>
           <div style={{ marginBottom: '1rem' }}>

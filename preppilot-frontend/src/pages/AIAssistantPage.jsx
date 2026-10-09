@@ -1,23 +1,29 @@
 import { useEffect, useState } from 'react';
 import ChatWindow from '../components/chat/ChatWindow';
 import ChatInput from '../components/chat/ChatInput';
-import { sendChatMessage, fetchConversations, fetchConversationById } from '../api/chatApi';
+import { sendChatMessage, fetchChatStatus, fetchConversations, fetchConversationById } from '../api/chatApi';
 
 export default function AIAssistantPage() {
   const [conversations, setConversations] = useState([]);
   const [selectedConvId, setSelectedConvId] = useState(null);
   const [messages, setMessages] = useState([]);
   const [loading, setLoading] = useState(false);
+  const [checkingAvailability, setCheckingAvailability] = useState(true);
+  const [available, setAvailable] = useState(false);
   const [error, setError] = useState('');
 
   const loadConversations = () => {
     fetchConversations()
       .then(({ data }) => setConversations(data || []))
-      .catch(() => setConversations([]));
+      .catch((err) => setError(err?.response?.data?.error || 'Unable to load conversations.'));
   };
 
   useEffect(() => {
     loadConversations();
+    fetchChatStatus()
+      .then(({ data }) => setAvailable(Boolean(data.available)))
+      .catch((err) => setError(err?.response?.data?.error || 'Unable to check AI Assistant availability.'))
+      .finally(() => setCheckingAvailability(false));
   }, []);
 
   const loadConversation = (id) => {
@@ -33,6 +39,7 @@ export default function AIAssistantPage() {
   };
 
   const handleSend = (text) => {
+    if (!available) return;
     setError('');
     const userMsg = { role: 'user', text };
     setMessages((m) => [...m, userMsg]);
@@ -79,8 +86,15 @@ export default function AIAssistantPage() {
 
         <div style={{ maxWidth: 800 }}>
           <ChatWindow messages={messages} loading={loading} />
+          {checkingAvailability ? (
+            <p role="status">Checking AI Assistant availability...</p>
+          ) : !available ? (
+            <p role="status">
+              AI Assistant is unavailable. Set OPENAI_API_KEY in the backend environment and restart the server to enable it.
+            </p>
+          ) : null}
           {error && <div style={{ color: 'crimson', marginTop: '0.5rem' }}>{error}</div>}
-          <ChatInput onSend={handleSend} disabled={loading} />
+          <ChatInput onSend={handleSend} disabled={loading || checkingAvailability || !available} />
         </div>
       </div>
     </div>

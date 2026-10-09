@@ -1,12 +1,18 @@
 from flask import Blueprint, jsonify, request
 from flask_jwt_extended import jwt_required, get_jwt_identity
 
-from app.services.ai_service import generate_reply
+from app.services.ai_service import generate_reply, is_ai_configured
 from app.models import Conversation, Message
 from app.extensions import db
 
 
 chat_bp = Blueprint('chat', __name__, url_prefix='/api')
+
+
+@chat_bp.route('/chat/status', methods=['GET'])
+@jwt_required()
+def chat_status():
+    return jsonify({'available': is_ai_configured()})
 
 
 @chat_bp.route('/chat', methods=['POST'])
@@ -22,6 +28,8 @@ def chat():
     conversation_id = data.get('conversation_id')
     if not message or not isinstance(message, str):
         return jsonify({'error': 'message is required'}), 400
+    if not is_ai_configured():
+        return jsonify({'error': 'AI Assistant is unavailable. Configure OPENAI_API_KEY in the backend environment to enable it.'}), 503
 
     user_id = int(get_jwt_identity())
 

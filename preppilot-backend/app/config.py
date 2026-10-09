@@ -27,6 +27,13 @@ class ProductionConfig(BaseConfig):
     DEBUG = False
 
 
+class TestingConfig(BaseConfig):
+    TESTING = True
+    SECRET_KEY = "preppilot-test-secret-key-minimum-length"
+    JWT_SECRET_KEY = "preppilot-test-jwt-secret-key-min-length"
+    SQLALCHEMY_DATABASE_URI = "sqlite://"
+
+
 def validate_production_config():
     required = ("SECRET_KEY", "JWT_SECRET_KEY", "DATABASE_URL", "CORS_ORIGINS")
     missing = [name for name in required if not os.getenv(name)]
@@ -42,5 +49,6 @@ def validate_production_config():
 config = {
     "development": DevelopmentConfig,
     "production": ProductionConfig,
+    "testing": TestingConfig,
     "default": DevelopmentConfig,
 }

@@ -8,11 +8,12 @@ export default function ResultsPage() {
   const [topicFilter, setTopicFilter] = useState('');
   const [openExplanations, setOpenExplanations] = useState(new Set());
   const [announce, setAnnounce] = useState('');
+  const [error, setError] = useState('');
 
   useEffect(() => {
     fetchAttempts()
       .then(({ data }) => setAttempts(data))
-      .catch(() => setAttempts([]))
+      .catch(() => setError('Unable to load your results. Check your connection and try again.'))
       .finally(() => setLoading(false));
   }, []);
 
@@ -59,7 +60,9 @@ export default function ResultsPage() {
       <h1>Results</h1>
 
       {loading ? (
-        <p>Loading your recent attempts...</p>
+        <p role="status">Loading your recent attempts...</p>
+      ) : error ? (
+        <p role="alert" style={{ color: 'crimson' }}>{error}</p>
       ) : (
         <>
           <div style={{ display: 'flex', gap: '1rem', marginBottom: '1rem', alignItems: 'center' }}>

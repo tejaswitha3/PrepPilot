@@ -7,11 +7,12 @@ export default function PreparationPage() {
   const [selectedCategoryId, setSelectedCategoryId] = useState(null);
   const [selectedTopicId, setSelectedTopicId] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState('');
 
   useEffect(() => {
     fetchPreparation()
       .then(({ data }) => setData(data))
-      .catch(() => setData({ categories: [] }))
+      .catch(() => setError('Unable to load preparation content. Check your connection and try again.'))
       .finally(() => setLoading(false));
   }, []);
 
@@ -66,12 +67,13 @@ export default function PreparationPage() {
   }, [selectedCategoryId, selectedTopicId]);
 
   if (loading) {
-    return <div style={{ padding: '2rem' }}>Loading preparation content...</div>;
+    return <div role="status" style={{ padding: '2rem' }}>Loading preparation content...</div>;
   }
 
   return (
     <div style={{ padding: '2rem' }}>
       <h1>Preparation</h1>
+      {error && <p role="alert" style={{ color: 'crimson' }}>{error}</p>}
 
       <div aria-live="polite" className="sr-only">{announcement}</div>
 

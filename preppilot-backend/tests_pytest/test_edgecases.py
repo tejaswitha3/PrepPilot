@@ -79,6 +79,7 @@ def test_empty_state_progress_returns_zeros(client):
 
 
 def test_ai_service_failure_modes_timeout_and_429(client, app, monkeypatch):
+    monkeypatch.setenv('OPENAI_API_KEY', 'test-key')
     # patch requests.post used by ai_service to simulate Timeout and 429
     import requests
 

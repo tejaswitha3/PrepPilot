@@ -6,23 +6,47 @@ const AuthContext = createContext();
 export function AuthProvider({ children }) {
   const [token, setToken] = useState(localStorage.getItem('preppilot_token') || '');
   const [user, setUser] = useState(null);
+  const [isInitializing, setIsInitializing] = useState(Boolean(token));
 
   useEffect(() => {
+    let active = true;
+    const clearInvalidToken = () => {
+      setToken('');
+      setUser(null);
+      localStorage.removeItem('preppilot_token');
+      setIsInitializing(false);
+    };
+    window.addEventListener('preppilot:invalid-token', clearInvalidToken);
+
     if (!token) {
       setUser(null);
       localStorage.removeItem('preppilot_token');
-      return;
+      setIsInitializing(false);
+      return () => window.removeEventListener('preppilot:invalid-token', clearInvalidToken);
     }
 
     localStorage.setItem('preppilot_token', token);
 
     fetchCurrentUser()
-      .then(({ data }) => setUser(data))
-      .catch(() => {
-        setToken('');
+      .then(({ data }) => {
+        if (active) setUser(data);
+      })
+      .catch((error) => {
+        if (!active) return;
         setUser(null);
-        localStorage.removeItem('preppilot_token');
+        if ([401, 422].includes(error.response?.status)) {
+          setToken('');
+          localStorage.removeItem('preppilot_token');
+        }
+      })
+      .finally(() => {
+        if (active) setIsInitializing(false);
       });
+
+    return () => {
+      active = false;
+      window.removeEventListener('preppilot:invalid-token', clearInvalidToken);
+    };
   }, [token]);
 
   const login = (newToken, userData) => {
@@ -37,8 +61,8 @@ export function AuthProvider({ children }) {
   };
 
   const value = useMemo(
-    () => ({ token, user, login, logout, isAuthenticated: Boolean(token) }),
-    [token, user]
+    () => ({ token, user, login, logout, isInitializing, isAuthenticated: Boolean(token) }),
+    [token, user, isInitializing]
   );
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

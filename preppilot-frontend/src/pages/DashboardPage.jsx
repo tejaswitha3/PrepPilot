@@ -6,11 +6,12 @@ export default function DashboardPage() {
   const { user } = useAuth();
   const [stats, setStats] = useState({ attempted: 0, solved: 0, accuracy: 0, weak_topics: [] });
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState('');
 
   useEffect(() => {
     fetchProgress()
       .then(({ data }) => setStats(data))
-      .catch(() => setStats({ attempted: 0, solved: 0, accuracy: 0, weak_topics: [] }))
+      .catch(() => setError('Unable to load your progress. Check your connection and try again.'))
       .finally(() => setLoading(false));
   }, []);
 
@@ -18,9 +19,12 @@ export default function DashboardPage() {
     <div style={{ padding: '2rem' }}>
       <h1>Dashboard</h1>
       <p>Welcome back, {user?.name || 'student'}.</p>
+      <p>Accuracy is correct answers divided by all saved attempts; counts update after each submitted answer.</p>
 
       {loading ? (
-        <p>Loading your progress...</p>
+        <p role="status">Loading your progress...</p>
+      ) : error ? (
+        <p role="alert" style={{ color: 'crimson' }}>{error}</p>
       ) : (
         <>
           <div style={{ display: 'flex', gap: '1rem', flexWrap: 'wrap', marginTop: '1.5rem' }}>

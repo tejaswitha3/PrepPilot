@@ -5,6 +5,7 @@ export default function ProgressPage() {
   const [stats, setStats] = useState({ attempted: 0, solved: 0, accuracy: 0, weak_topics: [] });
   const [categories, setCategories] = useState({});
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState('');
 
   useEffect(() => {
     setLoading(true);
@@ -14,8 +15,7 @@ export default function ProgressPage() {
         setCategories(res2.data || {});
       })
       .catch(() => {
-        setStats({ attempted: 0, solved: 0, accuracy: 0, weak_topics: [] });
-        setCategories({});
+        setError('Unable to load your progress. Check your connection and try again.');
       })
       .finally(() => setLoading(false));
   }, []);
@@ -25,9 +25,12 @@ export default function ProgressPage() {
       <h1>Progress</h1>
 
       {loading ? (
-        <p>Loading progress...</p>
+        <p role="status">Loading progress...</p>
+      ) : error ? (
+        <p role="alert" style={{ color: 'crimson' }}>{error}</p>
       ) : (
         <>
+          <p>Accuracy is correct answers divided by all saved attempts; category counts use the same rule.</p>
           <div style={{ display: 'flex', gap: '1rem', marginTop: '1rem', flexWrap: 'wrap' }}>
             <div style={{ border: '1px solid #ddd', padding: '1rem', borderRadius: '8px' }}>
               <div>Attempted</div>
@@ -58,6 +61,7 @@ export default function ProgressPage() {
 
           <div style={{ marginTop: '2rem' }}>
             <h3>Category Breakdown</h3>
+            <p>Accuracy is correct answers divided by all saved attempts; totals count each submitted answer.</p>
             {Object.keys(categories).length ? (
               <div style={{ display: 'grid', gap: '0.75rem' }}>
                 {Object.entries(categories).map(([cat, vals]) => (

@@ -25,6 +25,7 @@ def test_chat_requires_auth(client):
 
 
 def test_chat_context_aware_and_persistence(client, app, monkeypatch):
+    monkeypatch.setenv('OPENAI_API_KEY', 'test-key')
     token = create_user_and_token(client, email='d1@example.com')
     # find user id
     from app.models import User

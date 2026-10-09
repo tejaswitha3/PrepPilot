@@ -16,6 +16,8 @@ export default function Navbar() {
             <NavLink to="/dashboard">Dashboard</NavLink>
             <NavLink to="/practice">Practice</NavLink>
             <NavLink to="/progress">Progress</NavLink>
+            <NavLink to="/notes">Notes</NavLink>
+            <NavLink to="/ai-assistant">AI Assistant</NavLink>
             <NavLink to="/profile">Profile</NavLink>
             <span>{user?.name || 'User'}</span>
             <button type="button" onClick={logout}>Logout</button>

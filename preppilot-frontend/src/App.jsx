@@ -11,6 +11,7 @@ import ResultsPage from './pages/ResultsPage';
 import ProgressPage from './pages/ProgressPage';
 import ProfilePage from './pages/ProfilePage';
 import AIAssistantPage from './pages/AIAssistantPage';
+import NotesPage from './pages/NotesPage';
 import NotFoundPage from './pages/NotFoundPage';
 
 export default function App() {
@@ -67,6 +68,14 @@ export default function App() {
           element={
             <ProtectedRoute>
               <ProfilePage />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/notes"
+          element={
+            <ProtectedRoute>
+              <NotesPage />
             </ProtectedRoute>
           }
         />

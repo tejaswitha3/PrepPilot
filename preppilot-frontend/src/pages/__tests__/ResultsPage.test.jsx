@@ -12,5 +12,8 @@ test('renders Results page and counts attempts', async () => {
   expect(screen.getByText('Results')).toBeInTheDocument();
 
   await waitFor(() => expect(screen.getByText('Total attempts')).toBeInTheDocument());
-  await waitFor(() => expect(screen.getByText('1')).toBeInTheDocument());
+  await waitFor(() => {
+    expect(screen.getByText('Total attempts').parentElement.querySelector('strong')).toHaveTextContent('1');
+    expect(screen.getAllByText('Correct')[0].parentElement.querySelector('strong')).toHaveTextContent('1');
+  });
 });

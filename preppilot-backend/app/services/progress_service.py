@@ -1,78 +1,56 @@
-def get_placeholder_progress(user_id):
-    return {
-        "attempted": 18,
-        "solved": 12,
-        "accuracy": 67,
-        "weak_topics": [
-            {"topic": "Dynamic Programming", "score": 45},
-            {"topic": "Operating Systems", "score": 52},
-            {"topic": "DBMS", "score": 58},
-        ],
-    }
-
-
-def get_placeholder_category_progress(user_id):
-    return {
-        "DSA": {
-            "attempted": 9,
-            "solved": 6,
-            "accuracy": 67,
-        },
-        "Aptitude": {
-            "attempted": 4,
-            "solved": 3,
-            "accuracy": 75,
-        },
-        "Technical": {
-            "attempted": 3,
-            "solved": 2,
-            "accuracy": 67,
-        },
-        "Interview": {
-            "attempted": 2,
-            "solved": 1,
-            "accuracy": 50,
-        },
-    }
-
-
 def get_progress_for_user(user_id):
-    """Compute simple progress metrics from Attempt rows for the user.
+    """Return metrics based on saved attempts belonging to one user.
 
-    Returns zeros for users with no attempts.
+    Accuracy is the rounded percentage of correct attempts. Topic scores use
+    each topic's own attempts as the denominator; only topics with mistakes
+    appear in the weak-topic list.
     """
+    from collections import defaultdict
+
     from app.models import Attempt
-
-    attempts = Attempt.query.filter_by(user_id=user_id).all()
-    if not attempts:
-        return {
-            "attempted": 0,
-            "solved": 0,
-            "accuracy": 0,
-            "weak_topics": [],
-        }
-
-    attempted = len(attempts)
-    solved = sum(1 for a in attempts if a.is_correct)
-    accuracy = int((solved / attempted) * 100) if attempted else 0
-
-    # naive weak topics: count incorrect by topic
-    from collections import Counter
     from app.models import Question
 
-    topic_counter = Counter()
-    for a in attempts:
-        if not a.is_correct and a.question:
-            topic_counter[a.question.topic] += 1
+    attempts = (
+        Attempt.query.join(Question, Attempt.question_id == Question.id)
+        .filter(Attempt.user_id == user_id)
+        .all()
+    )
+    categories = defaultdict(lambda: {"attempted": 0, "solved": 0})
+    topics = defaultdict(lambda: {"attempted": 0, "solved": 0})
+    for attempt in attempts:
+        question = attempt.question
+        category_stats = categories[question.category]
+        topic_stats = topics[question.topic]
+        category_stats["attempted"] += 1
+        topic_stats["attempted"] += 1
+        if attempt.is_correct:
+            category_stats["solved"] += 1
+            topic_stats["solved"] += 1
 
+    attempted = len(attempts)
+    solved = sum(1 for attempt in attempts if attempt.is_correct)
+    for stats in categories.values():
+        stats["accuracy"] = round(stats["solved"] * 100 / stats["attempted"])
     weak_topics = [
-        {"topic": t or "Unknown", "score": int(100 - (count / attempted) * 100)}
-        for t, count in topic_counter.most_common(5)
-    ]
+        {
+            "topic": topic,
+            "score": round(stats["solved"] * 100 / stats["attempted"]),
+        }
+        for topic, stats in sorted(
+            topics.items(),
+            key=lambda item: (item[1]["solved"] / item[1]["attempted"], item[0]),
+        )
+        if stats["solved"] < stats["attempted"]
+    ][:5]
 
     return {
         "attempted": attempted,
         "solved": solved,
-        "accuracy": accuracy,
+        "accuracy": round(solved * 100 / attempted) if attempted else 0,
         "weak_topics": weak_topics,
+        "categories": dict(categories),
     }
+
+
+def get_category_progress_for_user(user_id):
+    return get_progress_for_user(user_id)["categories"]

@@ -6,7 +6,6 @@ from app.services.context_service import analyze_message_for_context, get_last_i
 # Configure with environment variables:
 # OPENAI_API_KEY, OPENAI_API_BASE (optional), OPENAI_MODEL (optional)
 
-OPENAI_API_KEY = os.getenv('OPENAI_API_KEY')
 OPENAI_API_BASE = os.getenv('OPENAI_API_BASE', 'https://api.openai.com/v1')
 OPENAI_MODEL = os.getenv('OPENAI_MODEL', 'gpt-3.5-turbo')
 
@@ -15,18 +14,23 @@ SYSTEM_PROMPT = os.getenv('PREPPILOT_AI_SYSTEM_PROMPT',
                            'You are Preppilot AI, an assistant that helps students prepare for technical interviews, coding, aptitude, and behavioral interviews. Provide clear, concise, and empathy-driven guidance, include study pointers, and avoid fabricating specifics about companies. When appropriate, include example problems or short code snippets.')
 
 
+def is_ai_configured():
+    return bool(os.getenv('OPENAI_API_KEY'))
+
+
 def chat_completion(user_messages, max_tokens=512, temperature=0.2):
     """Call the external LLM provider's chat completion endpoint.
 
     user_messages: list of dicts like [{"role": "user", "content": "..."}, ...]
     Returns assistant text on success, raises RuntimeError on failure.
     """
-    if not OPENAI_API_KEY:
+    api_key = os.getenv('OPENAI_API_KEY')
+    if not api_key:
         raise RuntimeError('OPENAI_API_KEY not configured')
 
     url = f"{OPENAI_API_BASE}/chat/completions"
     headers = {
-        'Authorization': f'Bearer {OPENAI_API_KEY}',
+        'Authorization': f'Bearer {api_key}',
         'Content-Type': 'application/json',
     }
 
@@ -61,7 +65,7 @@ def generate_reply(user_id: int, user_text: str, max_tokens=512, temperature=0.2
     - Always include `SYSTEM_PROMPT`.
     - If the user's message indicates a context-aware intent, fetch context and include a context block before the user's message.
     """
-    if not OPENAI_API_KEY:
+    if not is_ai_configured():
         raise RuntimeError('OPENAI_API_KEY not configured')
 
     intent = analyze_message_for_context(user_text)
@@ -88,7 +92,7 @@ def generate_reply(user_id: int, user_text: str, max_tokens=512, temperature=0.2
     # Call provider
     url = f"{OPENAI_API_BASE}/chat/completions"
     headers = {
-        'Authorization': f'Bearer {OPENAI_API_KEY}',
+        'Authorization': f'Bearer {os.getenv("OPENAI_API_KEY")}',
         'Content-Type': 'application/json',
     }
     payload = {

@@ -3,7 +3,7 @@ from typing import Optional, Dict, Any
 
 from app.models import Attempt, Question
 from app.extensions import db
-from app.services.progress_service import get_placeholder_progress
+from app.services.progress_service import get_progress_for_user
 
 
 EXPLAIN_PATTERNS = [
@@ -70,5 +70,5 @@ def get_last_incorrect_attempt_with_question(user_id: int) -> Optional[Dict[str,
 
 
 def get_study_suggestions_context(user_id: int) -> Dict[str, Any]:
-    """Return aggregated weak-topic stats for the user (placeholder service)."""
-    return get_placeholder_progress(user_id)
+    """Return aggregated practice statistics for the user."""
+    return get_progress_for_user(user_id)

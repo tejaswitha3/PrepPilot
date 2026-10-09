@@ -9,7 +9,6 @@ import PreparationPage from '../PreparationPage';
 
 test('renders Preparation page and categories', async () => {
   render(<PreparationPage />);
-  expect(screen.getByText('Preparation')).toBeInTheDocument();
-
+  expect(await screen.findByText('Preparation')).toBeInTheDocument();
   await waitFor(() => expect(screen.getByText('DSA / Coding')).toBeInTheDocument());
 });

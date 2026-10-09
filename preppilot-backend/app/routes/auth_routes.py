@@ -1,3 +1,5 @@
+import re
+
 from flask import Blueprint, jsonify, request
 from flask_jwt_extended import get_jwt_identity, jwt_required
 
@@ -6,6 +8,7 @@ from app.models import User
 
 
 auth_bp = Blueprint("auth", __name__, url_prefix="/api/auth")
+EMAIL_PATTERN = re.compile(r"^[^@\s]+@[^@\s]+\.[^@\s]+$")
 
 
 @auth_bp.route("/register", methods=["POST"])
@@ -18,6 +21,9 @@ def register():
 
     if not name or not email or not password:
         return jsonify({"error": "Name, email, and password are required."}), 400
+
+    if not EMAIL_PATTERN.fullmatch(email):
+        return jsonify({"error": "Enter a valid email address."}), 400
 
     if password != confirm_password:
         return jsonify({"error": "Passwords do not match."}), 400
@@ -44,6 +50,9 @@ def login():
 
     if not email or not password:
         return jsonify({"error": "Email and password are required."}), 400
+
+    if not EMAIL_PATTERN.fullmatch(email):
+        return jsonify({"error": "Enter a valid email address."}), 400
 
     try:
         token, user = login_user(email, password)

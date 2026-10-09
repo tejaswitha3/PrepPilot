@@ -41,8 +41,8 @@ def submit_attempt(question_id):
     data = request.get_json(silent=True) or {}
     selected_answer = data.get("selected_answer")
 
-    if selected_answer is None:
-        return jsonify({"error": "selected_answer is required."}), 400
+    if not isinstance(selected_answer, str) or selected_answer not in question.options:
+        return jsonify({"error": "selected_answer must be one of the question's options."}), 400
 
     is_correct = selected_answer == question.correct_answer
     user_id = int(get_jwt_identity())

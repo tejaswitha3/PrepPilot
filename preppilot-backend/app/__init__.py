@@ -22,19 +22,20 @@ def create_app(config_name=None):
         resources={r"/api/*": {"origins": app.config.get("CORS_ORIGINS", "*")}},
     )
 
-    from .models import Attempt, Conversation, Message, Question, User  # noqa: F401
+    from .models import Attempt, Conversation, Message, Note, Question, User  # noqa: F401
     from .routes.auth_routes import auth_bp
     from .routes.progress_routes import progress_bp
     from .routes.question_routes import question_bp
     from .routes.profile_routes import profile_bp
     from .routes.chat_routes import chat_bp
-    from .routes.profile_routes import profile_bp
+    from .routes.notes_routes import notes_bp
 
     app.register_blueprint(auth_bp)
     app.register_blueprint(progress_bp)
     app.register_blueprint(question_bp)
     app.register_blueprint(profile_bp)
     app.register_blueprint(chat_bp)
+    app.register_blueprint(notes_bp)
 
     @app.route("/")
     def index():

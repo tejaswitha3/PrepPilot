@@ -4,7 +4,7 @@ from flask_jwt_extended import get_jwt_identity, jwt_required
 from app.extensions import db
 from app.models import User
 from app.services.auth_service import serialize_user
-from app.services.progress_service import get_placeholder_progress
+from app.services.progress_service import get_progress_for_user
 
 
 profile_bp = Blueprint('profile', __name__, url_prefix='/api')
@@ -18,7 +18,7 @@ def get_profile():
     if not user:
         return jsonify({'error': 'User not found.'}), 404
 
-    progress = get_placeholder_progress(user_id)
+    progress = get_progress_for_user(user_id)
     return jsonify({'user': serialize_user(user), 'progress': progress})
 
 
@@ -38,5 +38,5 @@ def update_profile():
     user.name = name.strip()
     db.session.commit()
 
-    progress = get_placeholder_progress(user_id)
+    progress = get_progress_for_user(user_id)
     return jsonify({'user': serialize_user(user), 'progress': progress})

@@ -7,11 +7,12 @@ export default function PracticePage() {
   const [selectedAnswer, setSelectedAnswer] = useState('');
   const [result, setResult] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState('');
 
   useEffect(() => {
     fetchQuestions()
       .then(({ data }) => setQuestions(data))
-      .catch(() => setQuestions([]))
+      .catch(() => setError('Unable to load practice questions. Check your connection and try again.'))
       .finally(() => setLoading(false));
   }, []);
 
@@ -47,12 +48,18 @@ export default function PracticePage() {
   }
 
   if (!currentQuestion) {
-    return <div style={{ padding: '2rem' }}>No practice questions available right now.</div>;
+    return (
+      <div style={{ padding: '2rem' }}>
+        <h1>Practice</h1>
+        {error ? <p role="alert" style={{ color: 'crimson' }}>{error}</p> : <p>No practice questions available right now.</p>}
+      </div>
+    );
   }
 
   return (
     <div style={{ padding: '2rem', maxWidth: '800px', margin: '0 auto' }}>
       <h1>Practice</h1>
+      {error && <p role="alert" style={{ color: 'crimson' }}>{error}</p>}
       <p>
         {currentQuestion.category} · {currentQuestion.topic}
         {currentQuestion.company ? ` · ${currentQuestion.company}` : ''}

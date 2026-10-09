@@ -90,12 +90,12 @@ QUESTION_DATA = [
 def seed_questions():
     app = create_app()
     with app.app_context():
-        existing = Question.query.first()
-        if existing:
-            print(f"Questions already exist in the database: {Question.query.count()} records.")
-            return
+        existing_questions = {
+            question.question_text for question in Question.query.with_entities(Question.question_text)
+        }
+        missing = [item for item in QUESTION_DATA if item["question_text"] not in existing_questions]
 
-        for item in QUESTION_DATA:
+        for item in missing:
             question = Question(
                 category=item["category"],
                 topic=item["topic"],
@@ -109,7 +109,7 @@ def seed_questions():
             db.session.add(question)
 
         db.session.commit()
-        print(f"Seeded {len(QUESTION_DATA)} questions successfully.")
+        print(f"Added {len(missing)} missing questions; kept all existing questions.")
 
 
 if __name__ == "__main__":
