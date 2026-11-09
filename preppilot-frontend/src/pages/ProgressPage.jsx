@@ -21,7 +21,7 @@ export default function ProgressPage() {
   }, []);
 
   return (
-    <div style={{ padding: '2rem' }}>
+    <main className="page-shell">
       <h1>Progress</h1>
 
       {loading ? (
@@ -31,7 +31,7 @@ export default function ProgressPage() {
       ) : (
         <>
           <p>Accuracy is correct answers divided by all saved attempts; category counts use the same rule.</p>
-          <div style={{ display: 'flex', gap: '1rem', marginTop: '1rem', flexWrap: 'wrap' }}>
+          <div className="profile-stats" style={{ display: 'flex', gap: '1rem', marginTop: '1rem', flexWrap: 'wrap' }}>
             <div style={{ border: '1px solid #ddd', padding: '1rem', borderRadius: '8px' }}>
               <div>Attempted</div>
               <strong>{stats.attempted}</strong>
@@ -79,6 +79,6 @@ export default function ProgressPage() {
           </div>
         </>
       )}
-    </div>
+    </main>
   );
 }

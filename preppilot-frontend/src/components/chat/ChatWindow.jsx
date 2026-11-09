@@ -4,6 +4,7 @@ export default function ChatWindow({ messages, loading }) {
   return (
     <div
       aria-live="polite"
+      className="chat-window"
       style={{
         border: '1px solid #eee',
         padding: '1rem',

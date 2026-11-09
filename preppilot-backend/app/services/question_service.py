@@ -1,5 +1,6 @@
 from app.models import Question
 from app.models import Attempt
+from app.extensions import db
 
 
 def serialize_question(question):
@@ -11,7 +12,6 @@ def serialize_question(question):
         "difficulty": question.difficulty,
         "question_text": question.question_text,
         "options": question.options,
-        "explanation": question.explanation,
     }
 
 
@@ -31,7 +31,7 @@ def get_questions(category=None, topic=None, company=None, difficulty=None):
 
 
 def get_question_by_id(question_id):
-    return Question.query.get(question_id)
+    return db.session.get(Question, question_id)
 
 
 def serialize_attempt(attempt):
@@ -44,6 +44,8 @@ def serialize_attempt(attempt):
         "topic": q.topic if q else None,
         "company": q.company if q else None,
         "selected_answer": attempt.selected_answer,
+        "correct_answer": q.correct_answer if q else None,
+        "explanation": q.explanation if q and q.explanation and q.explanation.strip() else None,
         "is_correct": attempt.is_correct,
         "created_at": attempt.created_at.isoformat() if attempt.created_at else None,
     }

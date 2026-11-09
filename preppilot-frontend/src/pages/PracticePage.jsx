@@ -1,26 +1,58 @@
 import { useEffect, useState } from 'react';
+import { Link, useSearchParams } from 'react-router-dom';
 import { fetchQuestions, submitAttempt } from '../api/questionApi';
 
 export default function PracticePage() {
+  const [searchParams] = useSearchParams();
+  const category = searchParams.get('category') || '';
+  const topic = searchParams.get('topic') || '';
+  const company = searchParams.get('company') || '';
   const [questions, setQuestions] = useState([]);
   const [currentIndex, setCurrentIndex] = useState(0);
   const [selectedAnswer, setSelectedAnswer] = useState('');
   const [result, setResult] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState('');
 
   useEffect(() => {
-    fetchQuestions()
-      .then(({ data }) => setQuestions(data))
-      .catch(() => setError('Unable to load practice questions. Check your connection and try again.'))
-      .finally(() => setLoading(false));
-  }, []);
+    let active = true;
+    const filters = {
+      ...(category && { category }),
+      ...(topic && { topic }),
+      ...(company && { company }),
+    };
+
+    setQuestions([]);
+    setCurrentIndex(0);
+    setSelectedAnswer('');
+    setResult(null);
+    setError('');
+    setLoading(true);
+
+    fetchQuestions(filters)
+      .then(({ data }) => {
+        if (active) setQuestions(data);
+      })
+      .catch(() => {
+        if (active) setError('Unable to load practice questions. Check your connection and try again.');
+      })
+      .finally(() => {
+        if (active) setLoading(false);
+      });
+
+    return () => {
+      active = false;
+    };
+  }, [category, topic, company]);
 
   const currentQuestion = questions[currentIndex];
 
   const handleSubmit = async () => {
-    if (!currentQuestion || !selectedAnswer) return;
+    if (!currentQuestion || !selectedAnswer || submitting || result) return;
 
+    setError('');
+    setSubmitting(true);
     try {
       const { data } = await submitAttempt(currentQuestion.id, { selected_answer: selectedAnswer });
       setResult({
@@ -28,12 +60,10 @@ export default function PracticePage() {
         message: data.is_correct ? 'Correct answer!' : `Incorrect. The correct answer is ${data.correct_answer}.`,
         explanation: data.explanation,
       });
-    } catch (error) {
-      setResult({
-        isCorrect: false,
-        message: 'There was an issue submitting your answer. Please try again.',
-        explanation: '',
-      });
+    } catch (requestError) {
+      setError(requestError.response?.data?.error || 'There was an issue submitting your answer. Please try again.');
+    } finally {
+      setSubmitting(false);
     }
   };
 
@@ -44,25 +74,36 @@ export default function PracticePage() {
   };
 
   if (loading) {
-    return <div style={{ padding: '2rem' }}>Loading practice questions...</div>;
+    return <div role="status" className="page-shell">Loading practice questions...</div>;
   }
 
   if (!currentQuestion) {
     return (
-      <div style={{ padding: '2rem' }}>
+      <main className="page-shell">
         <h1>Practice</h1>
-        {error ? <p role="alert" style={{ color: 'crimson' }}>{error}</p> : <p>No practice questions available right now.</p>}
-      </div>
+        {error ? (
+          <p role="alert" style={{ color: 'crimson' }}>{error}</p>
+        ) : topic ? (
+          <p role="status">
+            No questions are available for {topic} yet. <Link to="/preparation">Choose another topic</Link> or{' '}
+            <Link to="/practice">practice all questions</Link>.
+          </p>
+        ) : (
+          <p>No practice questions available right now.</p>
+        )}
+      </main>
     );
   }
 
   return (
-    <div style={{ padding: '2rem', maxWidth: '800px', margin: '0 auto' }}>
+    <main className="page-shell" style={{ maxWidth: '840px' }}>
       <h1>Practice</h1>
       {error && <p role="alert" style={{ color: 'crimson' }}>{error}</p>}
       <p>
         {currentQuestion.category} · {currentQuestion.topic}
-        {currentQuestion.company ? ` · ${currentQuestion.company}` : ''}
+        {currentQuestion.company
+          ? ` · ${currentQuestion.company} practice example (not an actual past interview question)`
+          : ''}
       </p>
 
       <div style={{ border: '1px solid #ddd', borderRadius: '10px', padding: '1.5rem' }}>
@@ -74,6 +115,7 @@ export default function PracticePage() {
               key={option}
               type="button"
               onClick={() => setSelectedAnswer(option)}
+              disabled={submitting || !!result}
               style={{
                 textAlign: 'left',
                 padding: '0.75rem',
@@ -89,8 +131,8 @@ export default function PracticePage() {
         </div>
 
         <div style={{ marginTop: '1rem', display: 'flex', gap: '1rem', alignItems: 'center' }}>
-          <button type="button" onClick={handleSubmit} disabled={!selectedAnswer || !!result}>
-            Submit answer
+          <button type="button" onClick={handleSubmit} disabled={!selectedAnswer || !!result || submitting}>
+            {submitting ? 'Submitting...' : 'Submit answer'}
           </button>
           <button type="button" onClick={handleNext}>
             Next question
@@ -112,6 +154,6 @@ export default function PracticePage() {
           </div>
         )}
       </div>
-    </div>
+    </main>
   );
 }

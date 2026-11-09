@@ -39,6 +39,8 @@ def submit_attempt(question_id):
         return jsonify({"error": "Question not found."}), 404
 
     data = request.get_json(silent=True) or {}
+    if not isinstance(data, dict):
+        data = {}
     selected_answer = data.get("selected_answer")
 
     if not isinstance(selected_answer, str) or selected_answer not in question.options:
@@ -89,6 +91,7 @@ def get_preparation():
             {
                 "id": "dsa",
                 "name": "DSA / Coding",
+                "question_category": "DSA",
                 "topics": [
                     {"id": "arrays", "name": "Arrays", "intro": "Arrays: contiguous memory structure, common operations include traversal, prefix/suffix sums, two-pointer techniques, sliding windows."},
                     {"id": "strings", "name": "Strings", "intro": "Strings: character sequences, pattern matching, substring search, and common algorithms like KMP, rolling hash."},
@@ -104,8 +107,9 @@ def get_preparation():
             {
                 "id": "aptitude",
                 "name": "Aptitude",
+                "question_category": "Aptitude",
                 "topics": [
-                    {"id": "quant", "name": "Quantitative Aptitude", "intro": "Quant: number theory, ratios, percentages, work/time, and speed/distance."},
+                    {"id": "quant", "name": "Quantitative Aptitude", "question_topic": "Percentages", "intro": "Quant: number theory, ratios, percentages, work/time, and speed/distance."},
                     {"id": "logical", "name": "Logical Reasoning", "intro": "Logical Reasoning: puzzles, seating arrangements, syllogisms, and pattern recognition."},
                     {"id": "verbal", "name": "Verbal Ability", "intro": "Verbal: reading comprehension, grammar, para-jumbles, and vocabulary."},
                     {"id": "prob", "name": "Probability", "intro": "Probability: basics of events, conditional probability, distributions, and expected value."},
@@ -115,6 +119,7 @@ def get_preparation():
             {
                 "id": "technical",
                 "name": "Technical Subjects",
+                "question_category": "Technical",
                 "topics": [
                     {"id": "oop", "name": "OOP", "intro": "OOP: classes, inheritance, polymorphism, design principles and common design patterns."},
                     {"id": "dbms", "name": "DBMS", "intro": "DBMS: normalization, transactions, indexing, and query optimization."},
@@ -127,20 +132,21 @@ def get_preparation():
             {
                 "id": "interview",
                 "name": "Interview Preparation",
+                "question_category": "Interview",
                 "topics": [
-                    {"id": "technical-interview", "name": "Technical Interview", "intro": "Technical Interview: problem solving approach, whiteboarding, and communication tips."},
+                    {"id": "technical-interview", "name": "Technical Interview", "question_topic": "Technical", "intro": "Technical Interview: problem solving approach, whiteboarding, and communication tips."},
                     {"id": "hr-interview", "name": "HR Interview", "intro": "HR Interview: common HR questions, salary discussions, and negotiation strategies."},
-                    {"id": "behavioral", "name": "Behavioral Questions", "intro": "Behavioral: STAR technique, structuring responses, and framing achievements."},
-                    {"id": "resume", "name": "Resume-based Preparation", "intro": "Resume Prep: highlighting projects, quantifying impact, and tailoring for roles."},
-                    {"id": "mock", "name": "Mock Interviews", "intro": "Mock Interviews: how to run and get feedback from mocks, peer reviews."},
+                    {"id": "behavioral", "name": "Behavioral Questions", "question_topic": "Behavioral", "intro": "Behavioral: STAR technique, structuring responses, and framing achievements."},
+                    {"id": "resume", "name": "Resume-based Preparation", "question_topic": "Resume", "intro": "Resume Prep: highlighting projects, quantifying impact, and tailoring for roles."},
+                    {"id": "mock", "name": "Mock Interview Preparation", "question_topic": "Mock Interviews", "intro": "Guidance on arranging practice interviews with peers and asking for useful feedback."},
                 ],
             },
             {
                 "id": "company",
                 "name": "Company Preparation",
                 "topics": [
-                    {"id": "amazon-demo", "name": "Amazon (Demo)", "intro": "Amazon demo: prepare system design basics, behavioral leadership principles, and common coding patterns asked at Amazon."},
-                    {"id": "microsoft-demo", "name": "Microsoft (Demo)", "intro": "Microsoft demo: focus on product sense, coding, and design questions frequently seen in Microsoft interviews."},
+                    {"id": "amazon-demo", "name": "Amazon (Demo)", "question_category": "DSA", "question_topic": "Graphs", "company": "Amazon", "intro": "Demo practice for graph and interview concepts. These sample questions are not actual past Amazon interview questions."},
+                    {"id": "microsoft-demo", "name": "Microsoft (Demo)", "question_category": "Interview", "question_topic": "Technical", "company": "Microsoft", "intro": "Demo practice for technical interview concepts. These sample questions are not actual past Microsoft interview questions."},
                 ],
             },
         ]

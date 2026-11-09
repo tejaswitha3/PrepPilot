@@ -1,6 +1,5 @@
-from datetime import datetime
-
 from app.extensions import db
+from app.time_utils import utcnow_naive
 
 
 class Question(db.Model):
@@ -15,6 +14,6 @@ class Question(db.Model):
     options = db.Column(db.JSON, nullable=False)
     correct_answer = db.Column(db.String(255), nullable=False)
     explanation = db.Column(db.Text, nullable=False)
-    created_at = db.Column(db.DateTime, default=datetime.utcnow, nullable=False)
+    created_at = db.Column(db.DateTime, default=utcnow_naive, nullable=False)
 
     attempts = db.relationship("Attempt", backref="question", lazy=True, cascade="all, delete-orphan")

@@ -16,7 +16,7 @@ export default function DashboardPage() {
   }, []);
 
   return (
-    <div style={{ padding: '2rem' }}>
+    <main className="page-shell">
       <h1>Dashboard</h1>
       <p>Welcome back, {user?.name || 'student'}.</p>
       <p>Accuracy is correct answers divided by all saved attempts; counts update after each submitted answer.</p>
@@ -58,6 +58,6 @@ export default function DashboardPage() {
           </div>
         </>
       )}
-    </div>
+    </main>
   );
 }

@@ -39,13 +39,14 @@ export default function RegisterPage() {
   };
 
   return (
-    <div style={{ maxWidth: '420px', margin: '3rem auto', padding: '1.5rem', border: '1px solid #ddd', borderRadius: '12px' }}>
+    <main className="auth-card">
       <h1>Create account</h1>
       <form onSubmit={handleSubmit}>
         <div style={{ display: 'grid', gap: '0.8rem' }}>
           <input
             type="text"
             name="name"
+            aria-label="Full name"
             placeholder="Full name"
             value={form.name}
             onChange={handleChange}
@@ -55,27 +56,33 @@ export default function RegisterPage() {
           <input
             type="email"
             name="email"
+            aria-label="Email"
             placeholder="Email"
             value={form.email}
             onChange={handleChange}
+            maxLength={120}
             required
             style={{ padding: '0.75rem' }}
           />
           <input
             type="password"
             name="password"
+            aria-label="Password"
             placeholder="Password"
             value={form.password}
             onChange={handleChange}
+            minLength={6}
             required
             style={{ padding: '0.75rem' }}
           />
           <input
             type="password"
             name="confirm_password"
+            aria-label="Confirm password"
             placeholder="Confirm password"
             value={form.confirm_password}
             onChange={handleChange}
+            minLength={6}
             required
             style={{ padding: '0.75rem' }}
           />
@@ -84,10 +91,10 @@ export default function RegisterPage() {
           </button>
         </div>
       </form>
-      {error && <p style={{ color: 'crimson', marginTop: '1rem' }}>{error}</p>}
+      {error && <p role="alert" style={{ color: 'crimson', marginTop: '1rem' }}>{error}</p>}
       <p style={{ marginTop: '1rem' }}>
         Already have an account? <Link to="/login">Login</Link>
       </p>
-    </div>
+    </main>
   );
 }

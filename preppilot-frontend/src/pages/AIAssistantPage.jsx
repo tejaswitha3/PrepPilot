@@ -67,8 +67,8 @@ export default function AIAssistantPage() {
   };
 
   return (
-    <div style={{ padding: '2rem', display: 'flex', gap: '1rem' }}>
-      <div style={{ width: '260px' }}>
+    <main className="page-shell chat-layout">
+      <aside className="chat-sidebar">
         <h2>Conversations</h2>
         <button type="button" onClick={startNewConversation}>New Conversation</button>
         <ul style={{ listStyle: 'none', padding: 0, marginTop: '1rem' }}>
@@ -78,9 +78,9 @@ export default function AIAssistantPage() {
             </li>
           ))}
         </ul>
-      </div>
+      </aside>
 
-      <div style={{ flex: 1 }}>
+      <section className="chat-main">
         <h1>AI Assistant</h1>
         <p>Ask Preppilot for study tips, question explanations, and interview guidance.</p>
 
@@ -93,10 +93,10 @@ export default function AIAssistantPage() {
               AI Assistant is unavailable. Set OPENAI_API_KEY in the backend environment and restart the server to enable it.
             </p>
           ) : null}
-          {error && <div style={{ color: 'crimson', marginTop: '0.5rem' }}>{error}</div>}
+          {error && <div role="alert" style={{ color: 'crimson', marginTop: '0.5rem' }}>{error}</div>}
           <ChatInput onSend={handleSend} disabled={loading || checkingAvailability || !available} />
         </div>
-      </div>
-    </div>
+      </section>
+    </main>
   );
 }

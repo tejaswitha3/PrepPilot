@@ -1,0 +1,4 @@
+[build]
+  base = "preppilot-frontend"
+  publish = "dist"
+  command = "npm run build"

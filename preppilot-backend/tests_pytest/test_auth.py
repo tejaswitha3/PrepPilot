@@ -34,6 +34,29 @@ def test_registration_rejects_invalid_email(client):
     assert 'valid email' in response.json['error'].lower()
 
 
+def test_auth_rejects_non_object_and_malformed_fields(client):
+    registration = client.post('/api/auth/register', json=['not', 'an', 'object'])
+    numeric_name = register(client, 123, 'numeric-name@example.com', 'password1')
+    numeric_email = register(client, 'Valid', 123, 'password1')
+    numeric_password = register(client, 'Valid', 'numeric-password@example.com', 123)
+    malformed_login = client.post('/api/auth/login', json=['not', 'an', 'object'])
+    numeric_login = login(client, 'valid@example.com', 123)
+
+    assert registration.status_code == 400
+    assert numeric_name.status_code == 400
+    assert numeric_email.status_code == 400
+    assert numeric_password.status_code == 400
+    assert malformed_login.status_code == 400
+    assert numeric_login.status_code == 400
+
+
+def test_registration_rejects_names_longer_than_user_column(client):
+    response = register(client, 'N' * 121, 'long-name@example.com', 'password1')
+
+    assert response.status_code == 400
+    assert '120 characters or fewer' in response.json['error']
+
+
 def test_password_hashing_and_login_failure(client, app):
     register(client, 'Carol', 'carol@example.com', 'mypwd123')
     # Ensure stored password hash does not equal plaintext

@@ -10,7 +10,7 @@ export default function ChatBubble({ role, text }) {
         marginBottom: '0.5rem',
       }}
     >
-      <div style={{ maxWidth: '70%', padding: '0.6rem', borderRadius: '10px', background: isUser ? '#dbeafe' : '#f3f4f6' }}>
+      <div className="chat-bubble" style={{ maxWidth: '70%', padding: '0.6rem', borderRadius: '10px', background: isUser ? '#dbeafe' : '#f3f4f6' }}>
         <div style={{ fontSize: '0.9rem', color: '#111' }}>{text}</div>
       </div>
     </div>

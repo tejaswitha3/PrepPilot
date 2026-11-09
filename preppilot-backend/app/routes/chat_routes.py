@@ -24,10 +24,18 @@ def chat():
     Returns: { "reply": "...", "conversation_id": <int> }
     """
     data = request.get_json(silent=True) or {}
+    if not isinstance(data, dict):
+        data = {}
     message = data.get('message')
     conversation_id = data.get('conversation_id')
-    if not message or not isinstance(message, str):
-        return jsonify({'error': 'message is required'}), 400
+    if not isinstance(message, str) or not message.strip():
+        return jsonify({'error': 'A non-empty message is required.'}), 400
+    if conversation_id is not None and (
+        isinstance(conversation_id, bool)
+        or not isinstance(conversation_id, int)
+        or conversation_id < 1
+    ):
+        return jsonify({'error': 'conversation_id must be a positive integer.'}), 400
     if not is_ai_configured():
         return jsonify({'error': 'AI Assistant is unavailable. Configure OPENAI_API_KEY in the backend environment to enable it.'}), 503
 
@@ -35,7 +43,7 @@ def chat():
 
     # Reuse or create conversation
     if conversation_id:
-        conv = Conversation.query.get(conversation_id)
+        conv = db.session.get(Conversation, conversation_id)
         if not conv:
             return jsonify({'error': 'Conversation not found.'}), 404
         if conv.user_id != user_id:
@@ -86,7 +94,7 @@ def list_conversations():
 @jwt_required()
 def get_conversation(conversation_id):
     user_id = int(get_jwt_identity())
-    conv = Conversation.query.get(conversation_id)
+    conv = db.session.get(Conversation, conversation_id)
     if not conv:
         return jsonify({'error': 'Conversation not found.'}), 404
     if conv.user_id != user_id:

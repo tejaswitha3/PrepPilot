@@ -1,6 +1,5 @@
-from datetime import datetime
-
 from app.extensions import db
+from app.time_utils import utcnow_naive
 
 
 class Attempt(db.Model):
@@ -11,4 +10,4 @@ class Attempt(db.Model):
     question_id = db.Column(db.Integer, db.ForeignKey("questions.id"), nullable=False, index=True)
     selected_answer = db.Column(db.String(255), nullable=False)
     is_correct = db.Column(db.Boolean, nullable=False)
-    created_at = db.Column(db.DateTime, default=datetime.utcnow, nullable=False)
+    created_at = db.Column(db.DateTime, default=utcnow_naive, nullable=False)

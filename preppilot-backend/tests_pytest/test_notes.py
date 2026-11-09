@@ -82,3 +82,15 @@ def test_notes_require_auth_and_validate_fields(client):
         json={'title': '  ', 'content': 'Text'},
     )
     assert response.status_code == 400
+    non_object = client.post(
+        '/api/notes',
+        headers=auth(token),
+        json=['not', 'an', 'object'],
+    )
+    long_title = client.post(
+        '/api/notes',
+        headers=auth(token),
+        json={'title': 'T' * 201, 'content': 'Text'},
+    )
+    assert non_object.status_code == 400
+    assert long_title.status_code == 400

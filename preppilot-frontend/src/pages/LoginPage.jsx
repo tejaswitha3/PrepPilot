@@ -38,13 +38,14 @@ export default function LoginPage() {
   };
 
   return (
-    <div style={{ maxWidth: '420px', margin: '3rem auto', padding: '1.5rem', border: '1px solid #ddd', borderRadius: '12px' }}>
+    <main className="auth-card">
       <h1>Login</h1>
       <form onSubmit={handleSubmit}>
         <div style={{ display: 'grid', gap: '0.8rem' }}>
           <input
             type="email"
             name="email"
+            aria-label="Email"
             placeholder="Email"
             value={form.email}
             onChange={handleChange}
@@ -54,6 +55,7 @@ export default function LoginPage() {
           <input
             type="password"
             name="password"
+            aria-label="Password"
             placeholder="Password"
             value={form.password}
             onChange={handleChange}
@@ -65,10 +67,10 @@ export default function LoginPage() {
           </button>
         </div>
       </form>
-      {error && <p style={{ color: 'crimson', marginTop: '1rem' }}>{error}</p>}
+      {error && <p role="alert" style={{ color: 'crimson', marginTop: '1rem' }}>{error}</p>}
       <p style={{ marginTop: '1rem' }}>
         Need an account? <Link to="/register">Register</Link>
       </p>
-    </div>
+    </main>
   );
 }

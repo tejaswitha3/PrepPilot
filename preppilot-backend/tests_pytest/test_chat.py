@@ -24,6 +24,22 @@ def test_chat_requires_auth(client):
     assert r.status_code == 401
 
 
+def test_chat_rejects_malformed_and_empty_messages(client):
+    token = create_user_and_token(client, email='chat-validation@example.com')
+    headers = {'Authorization': 'Bearer ' + token}
+    malformed = client.post('/api/chat', headers=headers, json=['not', 'an', 'object'])
+    empty = client.post('/api/chat', headers=headers, json={'message': '   '})
+    invalid_conversation = client.post(
+        '/api/chat',
+        headers=headers,
+        json={'message': 'Hello', 'conversation_id': True},
+    )
+
+    assert malformed.status_code == 400
+    assert empty.status_code == 400
+    assert invalid_conversation.status_code == 400
+
+
 def test_chat_context_aware_and_persistence(client, app, monkeypatch):
     monkeypatch.setenv('OPENAI_API_KEY', 'test-key')
     token = create_user_and_token(client, email='d1@example.com')

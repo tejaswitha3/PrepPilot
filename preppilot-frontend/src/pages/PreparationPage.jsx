@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
+import { Link } from 'react-router-dom';
 import { fetchPreparation } from '../api/questionApi';
 import './PreparationPage.css';
 
@@ -20,6 +21,14 @@ export default function PreparationPage() {
 
   const selectedCategory = useMemo(() => categories.find((c) => c.id === selectedCategoryId) || null, [categories, selectedCategoryId]);
   const selectedTopic = useMemo(() => (selectedCategory ? selectedCategory.topics.find((t) => t.id === selectedTopicId) : null), [selectedCategory, selectedTopicId]);
+  const practiceParams = new URLSearchParams();
+  if (selectedCategory && selectedTopic) {
+    practiceParams.set('category', selectedTopic.question_category || selectedCategory.question_category || selectedCategory.name);
+    practiceParams.set('topic', selectedTopic.question_topic || selectedTopic.name);
+    if (selectedTopic.company) {
+      practiceParams.set('company', selectedTopic.company);
+    }
+  }
 
   const categoryRefs = useRef([]);
   const topicRefs = useRef([]);
@@ -67,18 +76,18 @@ export default function PreparationPage() {
   }, [selectedCategoryId, selectedTopicId]);
 
   if (loading) {
-    return <div role="status" style={{ padding: '2rem' }}>Loading preparation content...</div>;
+    return <div role="status" className="page-shell">Loading preparation content...</div>;
   }
 
   return (
-    <div style={{ padding: '2rem' }}>
+    <main className="page-shell">
       <h1>Preparation</h1>
       {error && <p role="alert" style={{ color: 'crimson' }}>{error}</p>}
 
       <div aria-live="polite" className="sr-only">{announcement}</div>
 
-      <div style={{ display: 'flex', gap: '1rem', alignItems: 'flex-start' }}>
-          <div style={{ minWidth: '220px' }}>
+      <div className="preparation-layout">
+          <div className="preparation-categories">
           <h3 id="prep-categories-heading">Categories</h3>
           <ul role="listbox" aria-labelledby="prep-categories-heading" style={{ listStyle: 'none', padding: 0 }}>
             {categories.map((cat, idx) => (
@@ -113,8 +122,8 @@ export default function PreparationPage() {
                 </div>
               </div>
 
-              <div style={{ display: 'flex', gap: '1rem', marginTop: '1rem' }}>
-                  <div style={{ minWidth: '240px' }}>
+              <div className="preparation-topics-layout">
+                  <div className="preparation-topics">
                   <h4 id="prep-topics-heading">Topics</h4>
                   <ul role="listbox" aria-labelledby="prep-topics-heading" style={{ listStyle: 'none', padding: 0 }}>
                     {selectedCategory.topics.map((topic, tIdx) => (
@@ -135,7 +144,7 @@ export default function PreparationPage() {
                   </ul>
                 </div>
 
-                <div style={{ flex: 1, border: '1px solid #eee', padding: '1rem', borderRadius: '8px' }}>
+                <div className="topic-overview">
                   {!selectedTopic ? (
                     <div>
                       <h4>Topic overview</h4>
@@ -148,11 +157,18 @@ export default function PreparationPage() {
                       <div style={{ marginTop: '1rem' }}>
                         <h5>Study tips</h5>
                         <ul>
-                          <li>Read the concept overview and watch short tutorials.</li>
-                          <li>Solve progressive practice problems from easy → hard.</li>
+                          <li>Review the concept overview and use trusted references to explore unfamiliar ideas.</li>
+                          <li>For coding practice, use a trusted external problem set; practice here uses multiple-choice questions.</li>
                           <li>Review common patterns and optimal approaches.</li>
                         </ul>
                       </div>
+                      <Link
+                        to={`/practice?${practiceParams.toString()}`}
+                        className="prep-button"
+                        style={{ display: 'inline-block', width: 'auto', marginTop: '1rem', textDecoration: 'none' }}
+                      >
+                        Start practice for {selectedTopic.name}
+                      </Link>
                     </div>
                   )}
                 </div>
@@ -161,6 +177,6 @@ export default function PreparationPage() {
           )}
         </div>
       </div>
-    </div>
+    </main>
   );
 }

@@ -75,7 +75,7 @@ export default function NotesPage() {
   const viewedNote = notes.find((note) => note.id === viewingId);
 
   return (
-    <main style={{ padding: '2rem', maxWidth: '1000px', margin: '0 auto' }}>
+    <main className="page-shell">
       <h1>Study notes</h1>
       <p>Your notes are private to your account.</p>
       {error && <p role="alert" style={{ color: 'crimson' }}>{error}</p>}
@@ -87,10 +87,10 @@ export default function NotesPage() {
         ) : notes.length ? (
           <ul style={{ listStyle: 'none', padding: 0, display: 'grid', gap: '0.75rem' }}>
             {notes.map((note) => (
-              <li key={note.id} style={{ border: '1px solid #ddd', borderRadius: '8px', padding: '1rem' }}>
+              <li key={note.id} className="note-card">
                 <strong>{note.title}</strong>
                 <p>{note.content.slice(0, 160)}{note.content.length > 160 ? '…' : ''}</p>
-                <div style={{ display: 'flex', gap: '0.5rem' }}>
+                <div className="note-actions">
                   <button type="button" onClick={() => setViewingId(note.id)}>View</button>
                   <button type="button" onClick={() => editNote(note)}>Edit</button>
                   <button type="button" onClick={() => handleDelete(note)}>Delete</button>

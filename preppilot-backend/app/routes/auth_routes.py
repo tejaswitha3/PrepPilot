@@ -3,6 +3,7 @@ import re
 from flask import Blueprint, jsonify, request
 from flask_jwt_extended import get_jwt_identity, jwt_required
 
+from app.extensions import db
 from app.services.auth_service import get_user_by_email, login_user, register_user, serialize_user
 from app.models import User
 
@@ -14,14 +15,23 @@ EMAIL_PATTERN = re.compile(r"^[^@\s]+@[^@\s]+\.[^@\s]+$")
 @auth_bp.route("/register", methods=["POST"])
 def register():
     data = request.get_json(silent=True) or {}
-    name = (data.get("name") or "").strip()
-    email = (data.get("email") or "").strip()
+    if not isinstance(data, dict):
+        data = {}
+    name = data.get("name")
+    email = data.get("email")
     password = data.get("password") or ""
     confirm_password = data.get("confirm_password") or ""
 
-    if not name or not email or not password:
-        return jsonify({"error": "Name, email, and password are required."}), 400
+    if not isinstance(name, str) or not name.strip():
+        return jsonify({"error": "Name is required."}), 400
+    if len(name.strip()) > 120:
+        return jsonify({"error": "Name must be 120 characters or fewer."}), 400
+    if (not isinstance(email, str) or not email.strip() or len(email.strip()) > 120
+            or not isinstance(password, str) or not password):
+        return jsonify({"error": "Name, email, and password are required; email must be 120 characters or fewer."}), 400
 
+    name = name.strip()
+    email = email.strip()
     if not EMAIL_PATTERN.fullmatch(email):
         return jsonify({"error": "Enter a valid email address."}), 400
 
@@ -45,11 +55,14 @@ def register():
 @auth_bp.route("/login", methods=["POST"])
 def login():
     data = request.get_json(silent=True) or {}
-    email = (data.get("email") or "").strip()
-    password = data.get("password") or ""
+    if not isinstance(data, dict):
+        data = {}
+    email = data.get("email")
+    password = data.get("password")
 
-    if not email or not password:
+    if not isinstance(email, str) or not email.strip() or not isinstance(password, str) or not password:
         return jsonify({"error": "Email and password are required."}), 400
+    email = email.strip()
 
     if not EMAIL_PATTERN.fullmatch(email):
         return jsonify({"error": "Enter a valid email address."}), 400
@@ -66,7 +79,7 @@ def login():
 @jwt_required()
 def me():
     user_id = int(get_jwt_identity())
-    user = User.query.get(user_id)
+    user = db.session.get(User, user_id)
 
     if not user:
         return jsonify({"error": "User not found."}), 404

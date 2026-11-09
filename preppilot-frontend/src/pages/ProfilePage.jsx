@@ -34,7 +34,7 @@ export default function ProfilePage() {
   };
 
   return (
-    <div style={{ padding: '2rem' }}>
+    <main className="page-shell">
       <h1>Profile</h1>
 
       {loading ? (
@@ -44,8 +44,8 @@ export default function ProfilePage() {
       ) : profile ? (
         <div style={{ maxWidth: 720 }}>
           <div style={{ marginBottom: '1rem' }}>
-            <label style={{ display: 'block', fontSize: '0.9rem', color: '#444' }}>Name</label>
-            <input value={editingName} onChange={(e) => setEditingName(e.target.value)} style={{ padding: '0.5rem', width: '100%', marginTop: '0.25rem' }} />
+            <label htmlFor="profile-name" style={{ display: 'block', fontSize: '0.9rem', color: '#444' }}>Name</label>
+            <input id="profile-name" value={editingName} onChange={(e) => setEditingName(e.target.value)} style={{ padding: '0.5rem', width: '100%', marginTop: '0.25rem' }} maxLength={120} />
             <div style={{ marginTop: '0.5rem' }}>
               <button type="button" onClick={handleSave} disabled={saving}>{saving ? 'Saving...' : 'Save'}</button>
             </div>
@@ -59,7 +59,7 @@ export default function ProfilePage() {
           <div style={{ marginTop: '1.5rem' }}>
             <h3>Preparation Stats</h3>
             {profile.progress ? (
-              <div style={{ display: 'flex', gap: '1rem', marginTop: '0.5rem' }}>
+              <div className="profile-stats" style={{ display: 'flex', gap: '1rem', marginTop: '0.5rem', flexWrap: 'wrap' }}>
                 <div style={{ border: '1px solid #ddd', padding: '0.75rem', borderRadius: '8px' }}>
                   <div>Attempted</div>
                   <strong>{profile.progress.attempted}</strong>
@@ -78,11 +78,11 @@ export default function ProfilePage() {
             )}
           </div>
 
-          {message && <div style={{ marginTop: '1rem', color: message.includes('Failed') ? 'crimson' : 'green' }}>{message}</div>}
+          {message && <div role="status" style={{ marginTop: '1rem', color: message.includes('Failed') ? 'crimson' : 'green' }}>{message}</div>}
         </div>
       ) : (
         <p>Profile not found.</p>
       )}
-    </div>
+    </main>
   );
 }

@@ -1,6 +1,5 @@
-from datetime import datetime
-
 from app.extensions import db
+from app.time_utils import utcnow_naive
 
 
 class Message(db.Model):
@@ -10,4 +9,4 @@ class Message(db.Model):
     conversation_id = db.Column(db.Integer, db.ForeignKey("conversations.id"), nullable=False, index=True)
     sender = db.Column(db.String(20), nullable=False)
     content = db.Column(db.Text, nullable=False)
-    created_at = db.Column(db.DateTime, default=datetime.utcnow, nullable=False)
+    created_at = db.Column(db.DateTime, default=utcnow_naive, nullable=False)

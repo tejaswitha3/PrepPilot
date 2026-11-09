@@ -5,16 +5,18 @@ export default function Navbar() {
   const { isAuthenticated, user, logout } = useAuth();
 
   return (
-    <nav style={{ padding: '1rem 2rem', borderBottom: '1px solid #ddd', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+    <nav className="app-navbar">
       <NavLink to="/" style={{ textDecoration: 'none', color: '#111', fontWeight: '700' }}>
         Preppilot
       </NavLink>
 
-      <div style={{ display: 'flex', gap: '1rem', alignItems: 'center' }}>
+      <div className="app-nav-links">
         {isAuthenticated ? (
           <>
             <NavLink to="/dashboard">Dashboard</NavLink>
+            <NavLink to="/preparation">Preparation</NavLink>
             <NavLink to="/practice">Practice</NavLink>
+            <NavLink to="/results">Results</NavLink>
             <NavLink to="/progress">Progress</NavLink>
             <NavLink to="/notes">Notes</NavLink>
             <NavLink to="/ai-assistant">AI Assistant</NavLink>

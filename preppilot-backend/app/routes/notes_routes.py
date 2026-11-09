@@ -34,11 +34,13 @@ def list_notes():
 @jwt_required()
 def create_note():
     data = request.get_json(silent=True) or {}
+    if not isinstance(data, dict):
+        data = {}
     title = data.get("title")
     content = data.get("content")
-    if not isinstance(title, str) or not title.strip():
-        return jsonify({"error": "A valid title is required."}), 400
-    if not isinstance(content, str):
+    if not isinstance(title, str) or not title.strip() or len(title.strip()) > 200:
+        return jsonify({"error": "A valid title of 200 characters or fewer is required."}), 400
+    if not isinstance(content, str) or not content.strip():
         return jsonify({"error": "Note content is required."}), 400
 
     note = Note(
@@ -68,14 +70,16 @@ def update_note(note_id):
         return jsonify({"error": "Note not found."}), 404
 
     data = request.get_json(silent=True) or {}
+    if not isinstance(data, dict):
+        data = {}
     title = data.get("title")
     content = data.get("content")
     if title is not None:
-        if not isinstance(title, str) or not title.strip():
-            return jsonify({"error": "A valid title is required."}), 400
+        if not isinstance(title, str) or not title.strip() or len(title.strip()) > 200:
+            return jsonify({"error": "A valid title of 200 characters or fewer is required."}), 400
         note.title = title.strip()
     if content is not None:
-        if not isinstance(content, str):
+        if not isinstance(content, str) or not content.strip():
             return jsonify({"error": "Note content must be text."}), 400
         note.content = content
     if title is None and content is None:

@@ -14,7 +14,7 @@ profile_bp = Blueprint('profile', __name__, url_prefix='/api')
 @jwt_required()
 def get_profile():
     user_id = int(get_jwt_identity())
-    user = User.query.get(user_id)
+    user = db.session.get(User, user_id)
     if not user:
         return jsonify({'error': 'User not found.'}), 404
 
@@ -26,13 +26,15 @@ def get_profile():
 @jwt_required()
 def update_profile():
     user_id = int(get_jwt_identity())
-    user = User.query.get(user_id)
+    user = db.session.get(User, user_id)
     if not user:
         return jsonify({'error': 'User not found.'}), 404
 
     data = request.get_json(silent=True) or {}
+    if not isinstance(data, dict):
+        data = {}
     name = data.get('name')
-    if not name or not isinstance(name, str) or not name.strip():
+    if not isinstance(name, str) or not name.strip() or len(name.strip()) > 120:
         return jsonify({'error': 'Valid name is required.'}), 400
 
     user.name = name.strip()

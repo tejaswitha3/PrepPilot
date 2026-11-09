@@ -48,7 +48,7 @@ def get_last_incorrect_attempt_with_question(user_id: int) -> Optional[Dict[str,
     if not attempt:
         return None
 
-    question = Question.query.get(attempt.question_id)
+    question = db.session.get(Question, attempt.question_id)
     if not question:
         return None
 

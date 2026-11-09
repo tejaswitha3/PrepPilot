@@ -54,10 +54,12 @@ def test_correct_answer_absent_on_questions_endpoints(client, app):
     r1 = client.get('/api/questions', headers={'Authorization': f'Bearer {token}'})
     assert r1.status_code == 200
     assert 'correct_answer' not in r1.json[0]
+    assert 'explanation' not in r1.json[0]
 
     r2 = client.get(f'/api/questions/{qid}', headers={'Authorization': f'Bearer {token}'})
     assert r2.status_code == 200
     assert 'correct_answer' not in r2.json
+    assert 'explanation' not in r2.json
 
 
 def test_duplicate_email_registration_casing(client):
