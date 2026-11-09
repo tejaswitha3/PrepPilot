@@ -25,7 +25,7 @@ The Preparation page is a static guide, not an interactive mock interview. Pract
 
 ## Local setup
 
-Prerequisites: Python 3.11 or newer, Node.js/npm, and Git.
+Prerequisites: Python 3.11 or newer, Node.js 22.x/npm, and Git.
 
 ### Backend
 
@@ -110,7 +110,7 @@ The backend tests use an isolated in-memory test database. Frontend tests run in
 
 ## Deployment
 
-The checked-in deployment setup uses Render for the backend/PostgreSQL and Netlify for the frontend. The Vercel config is not part of this deployment path.
+The checked-in deployment setup uses Render for the backend/PostgreSQL and Netlify for the frontend. Netlify builds with Node.js 22 to match GitHub Actions and the frontend dependencies. The Vercel config is not part of this deployment path.
 
 ### Deployment steps
 
